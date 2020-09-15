@@ -5,8 +5,10 @@ const secret = fs.readFileSync(".secret.json").toString();
 const parsedSecret = JSON.parse(secret);
 
 const BAOBAB_NETWORK_ID = '1001';
-const BAOBAB_DEPLOYER = parsedSecret.baobab.deployer;
-const BAOBAB_URL = parsedSecret.baobab.URL;
+const BAOBAB_DEPLOYER = parsedSecret.baobabPublicEN.deployer;
+const BAOBAB_URL = parsedSecret.baobabPublicEN.URL;
+
+console.log(BAOBAB_DEPLOYER)
 
 
 module.exports = {
