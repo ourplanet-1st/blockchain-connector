@@ -8,9 +8,6 @@ const BAOBAB_NETWORK_ID = '1001';
 const BAOBAB_DEPLOYER = parsedSecret.baobabPublicEN.deployer;
 const BAOBAB_URL = parsedSecret.baobabPublicEN.URL;
 
-console.log(BAOBAB_DEPLOYER)
-
-
 module.exports = {
     networks: {
         baobab: {
