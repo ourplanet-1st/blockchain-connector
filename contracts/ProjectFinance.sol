@@ -2,13 +2,6 @@
 pragma solidity >=0.4.24 <=0.5.6;
 
 contract ProjectFinance {
-    
-    struct BankAccount {
-      bytes32 name;
-      bytes32 accountNumber;
-      bool doesExist;
-    }
-
     struct Step {
       bytes32 stepId;
       int32 progressPercentage;
@@ -21,25 +14,16 @@ contract ProjectFinance {
       bytes32 projectId;
       address pfBanker; // 금융사
       address pfEnforcer; // 시행사
-      address pfConstructor; // 시행사
+      address pfConstructor; // 시공사
       bool doesExist;
       Step[] stepList; // list of Step keys so we can look up them
     }
 
-    event CreateBankAccount(address indexed addr, bytes32 name, bytes32 accountNumber);
+    event AddStepToProject(bytes32 indexed projectId, bytes32 stepId, int32 progressPercentage, int32 amountOfMoney, bytes32 currency);
     event CreateProject(bytes32 projectId, address indexed pfBanker, address indexed pfEnforcer, address indexed pfConstructor);
 
-    mapping (address => BankAccount) public bankAccounts;
     mapping (bytes32 => Project) public projects;
     bytes32[] public projectsLUT;
-
-    modifier onlyUniqueBankAccountAllowed(address _addr) {
-      require(
-        bankAccounts[_addr].doesExist == false,
-        "given _addr already has bankAccount"
-      );
-      _;
-    }
 
     modifier onlyUniqueProjectIdAllowed(bytes32 _projectId) {
       require(
@@ -51,35 +35,21 @@ contract ProjectFinance {
 
     modifier projectExists(bytes32 _projectId) {
       require(
-        projects[_projectid].doesExist,
+        projects[_projectId].doesExist,
         "given _projectId dose not exists." 
-      )
+      );
+      _;
     }
 
     constructor() public {
 
     }
     
-    function createBankAccount(
-      address _addr,
-      bytes32 _name,
-      bytes32 _accountNumber
-    )
-    public
-    onlyUniqueBankAccountAllowed(_addr)
-    returns (bool) {
-      bankAccounts[_addr].name = _name;
-      bankAccounts[_addr].accountNumber = _accountNumber;
-      bankAccounts[_addr].doesExist = true;
-      emit CreateBankAccount(_addr, _name, _accountNumber);
-      return true;
-    }
-
     function createProject(
       bytes32 _projectId,
       address _pfBanker, // 금융사
       address _pfEnforcer, // 시행사
-      address _pfConstructor // 시행사
+      address _pfConstructor // 시공사
     ) 
     public 
     onlyUniqueProjectIdAllowed(_projectId)
@@ -103,9 +73,39 @@ contract ProjectFinance {
     public
     projectExists(_projectId)
     returns (bool) {
-      projects[projectId].stepList.push(
-        Step(_stepId, progressPercentage, amountOfMoney, currency, true)
+      projects[_projectId].stepList.push(
+        Step(_stepId, _progressPercentage, _amountOfMoney, _currency, true)
       );
+      emit AddStepToProject(_projectId, _stepId, _progressPercentage, _amountOfMoney, _currency);
     }
+
+    function getStepsLength(
+      bytes32 _projectId
+    )
+    public
+    view
+    projectExists(_projectId)
+    returns (uint256) {
+      return projects[_projectId].stepList.length;
+    }
+    
+    function getStep(
+      bytes32 _projectId,
+      uint256 _index
+    )
+    public
+    view
+    returns (
+      bytes32 stepId,
+      int32 progressPercentage,
+      int32 amountOfMoney,
+      bytes32 currency
+    ) {
+      return ((
+        projects[_projectId].stepList[_index].stepId,
+        projects[_projectId].stepList[_index].progressPercentage,
+        projects[_projectId].stepList[_index].amountOfMoney,
+        projects[_projectId].stepList[_index].currency
+      ));
     }
 }
