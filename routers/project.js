@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const APP_ROOT_DIR = path.join(__dirname, '..');
+const randomstring = require('randomstring')
 // Setup Klaytn SDK + Cloudbric CLBK token contract
 const secret = fs.readFileSync(path.join(APP_ROOT_DIR, '.secret.json'));
 const parsedSecret = JSON.parse(secret);
@@ -41,7 +42,7 @@ router.get('/pf/project/:projectId', async (req, res, next) => {
 });
 
 router.post('/pf/project', async (req, res, next) => {
-    const projectId = caver.utils.asciiToHex(req.body.projectId);
+    const projectId = caver.utils.asciiToHex(randomstring.generate(32));
     const pfBanker = req.body.pfBanker;
     const pfEnforcer = req.body.pfEnforcer;
     const pfConstructor = req.body.pfConstructor;
